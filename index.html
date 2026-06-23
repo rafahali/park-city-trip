@@ -122,6 +122,11 @@
   .plansmart li{position:relative;padding:6px 0 6px 16px;font-size:14.5px;color:var(--soft);line-height:1.6}
   .plansmart li:before{content:"";position:absolute;left:1px;top:15px;width:3px;height:3px;border-radius:50%;background:var(--brassdim)}
   .plansmart li b{color:var(--txt);font-weight:500}
+  .trip-days{display:flex;flex-direction:column;gap:0;margin:4px 0 2px}
+  .trip-day{display:grid;grid-template-columns:76px 1fr;gap:10px;padding:9px 0;border-bottom:1px solid var(--line2)}
+  .trip-day:last-child{border-bottom:none;padding-bottom:0}
+  .td-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--brass);font-weight:500;padding-top:2px}
+  .td-text{font-size:14px;color:var(--soft);line-height:1.55}
 
   footer{border-top:1px solid var(--line);padding:24px 18px 64px;color:var(--mut);font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;max-width:680px;margin:0 auto;font-weight:400}
 </style>
@@ -160,13 +165,12 @@
   <summary style="font-size:15px;letter-spacing:.01em">The shape of the trip</summary>
   <div class="ps-body" style="padding-top:14px">
     <p class="ps-intro">Three nights at Montage Deer Valley. Check-in Thursday, checkout Sunday morning. The big day is Saturday&mdash;everything else is building toward it.</p>
-    <div class="plansmart ph" style="font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--brass);margin:12px 0 8px;font-weight:500;border-top:1px solid var(--line2);padding-top:14px">Already confirmed</div>
-    <ul>
-      <li><b>Riverhorse on Main</b> &mdash; Fri Jul 3 at 7:30pm &middot; 3 guests &middot; Dining Room</li>
-      <li><b>Spa at Montage</b> &mdash; Fri Jul 3 at 11:30am &middot; 3 guests &middot; 120 min each</li>
-      <li><b>Veuve Clicquot champagne experience</b> &mdash; timing TBD</li>
-      <li><b>Montage Deer Valley</b> &mdash; Peak View room &middot; Jul 2&ndash;5</li>
-    </ul>
+    <div class="trip-days">
+      <div class="trip-day"><span class="td-label">Thu Jul 2</span><span class="td-text">Arrive. Check in to Montage. Settle in, explore the property.</span></div>
+      <div class="trip-day"><span class="td-label">Fri Jul 3</span><span class="td-text">Spa at 11:30am. Afternoon in Park City. Riverhorse at 7:30pm. High West after.</span></div>
+      <div class="trip-day"><span class="td-label">Sat Jul 4</span><span class="td-text">Horseback ride in the morning. Pool. Fourth of July fireworks.</span></div>
+      <div class="trip-day"><span class="td-label">Sun Jul 5</span><span class="td-text">Late breakfast. Checkout. Safe travels home.</span></div>
+    </div>
   </div>
 </details>
 
