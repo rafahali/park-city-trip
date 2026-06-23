@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f4f0e6">
+<title>Three Days. Park City.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f4f0e6; --card:#ece6d8; --card2:#e3dbc8;
+    --line:rgba(45,38,28,.11); --line2:rgba(45,38,28,.06);
+    --txt:#2a2418; --soft:#4a4030; --mut:#8c7f6a;
+    --brass:#4a5e3a; --brassdim:#374a2b; --oxblood:#7a4a3a;
+    --serif:'Cormorant Garamond',Georgia,serif;
+    --read:'Cormorant Garamond',Georgia,serif;
+    --mono:'DM Sans',ui-sans-serif,system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--read);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+
+  header{padding:40px 20px 26px;border-bottom:1px solid var(--line);background:
+    radial-gradient(130% 100% at 88% -20%, rgba(74,94,58,.08), transparent 60%), var(--bg)}
+  .kicker{font-family:var(--mono);font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--brass);font-weight:500}
+  h1{font-family:var(--serif);margin:10px 0 16px;font-size:52px;line-height:.92;letter-spacing:-.02em;font-weight:600}
+  .orient{font-family:var(--mono);font-size:10.5px;line-height:1.6;letter-spacing:.02em;color:var(--mut);margin:13px 2px 0;font-weight:400}
+  .orient b{color:var(--brass);font-weight:500}
+
+  .bars{position:sticky;top:0;z-index:30;background:rgba(244,240,230,.99);border-bottom:1px solid var(--line)}
+  .bars-row{display:flex;align-items:stretch}
+  nav{flex:1;display:flex;gap:0;padding:0 8px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  nav button{flex:0 0 auto;border:0;border-bottom:2px solid transparent;background:transparent;color:var(--mut);
+    font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.14em;padding:13px 13px;text-transform:uppercase;cursor:pointer}
+  nav button.on{color:var(--brass);border-bottom-color:var(--brass)}
+  nav button.plan{color:var(--soft)}
+  .planner-link{flex:0 0 auto;border:0;border-left:1px solid var(--line2);background:transparent;color:var(--mut);
+    font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.14em;padding:13px 14px;text-transform:uppercase;
+    cursor:pointer;text-decoration:none;display:flex;align-items:center;white-space:nowrap}
+  .planner-link:hover{color:var(--brass)}
+  .dayfilter{display:flex;align-items:center;gap:7px;padding:9px 14px;overflow-x:auto;-webkit-overflow-scrolling:touch;border-top:1px solid var(--line2)}
+  .dayfilter .dl{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);flex:0 0 auto;font-weight:400}
+  .dayfilter button{flex:0 0 auto;background:transparent;border:1px solid var(--line);color:var(--soft);
+    font-family:var(--mono);font-size:11px;letter-spacing:.06em;padding:5px 12px;border-radius:2px;cursor:pointer;text-transform:uppercase;font-weight:400}
+  .dayfilter button.active{background:var(--brass);border-color:var(--brass);color:var(--bg)}
+
+  main{padding:8px 14px 30px;max-width:680px;margin:0 auto}
+  section{scroll-margin-top:116px;padding-top:18px}
+  .sec-head{display:flex;align-items:baseline;gap:11px;margin:16px 2px 0;padding-bottom:11px;border-bottom:1px solid var(--line)}
+  .sec-head .n{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--brass);letter-spacing:.05em}
+  .sec-head h2{font-family:var(--serif);font-size:32px;font-weight:500;letter-spacing:-.01em;margin:0}
+  .sec-sub{color:var(--mut);font-size:14px;margin:13px 2px 16px;max-width:94%;font-family:var(--mono);font-weight:400;letter-spacing:.01em}
+  .filter-note{display:none;font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--brass);margin:0 2px 14px;font-weight:500}
+  body.filtering .filter-note{display:block}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:2px;padding:18px;margin:0 0 10px}
+  .card.star{border-color:rgba(74,94,58,.38)}
+  .card.booked{border-color:rgba(74,94,58,.6);border-left:3px solid var(--brass)}
+  .card.hide{display:none}
+  .more{display:none}
+  section.open .more{display:block}
+  body.filtering .more{display:block}
+  .rank{font-family:var(--mono);font-size:11px;font-weight:400;color:var(--mut);margin-right:8px}
+  .card.star .rank{color:var(--brass)}
+  .card-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+  .card h3{font-family:var(--serif);margin:0;font-size:21px;font-weight:600;letter-spacing:-.01em;line-height:1.18}
+  .price{font-family:var(--mono);color:var(--soft);font-size:11px;letter-spacing:.03em;white-space:nowrap;flex:0 0 auto;font-weight:400}
+  .dm{display:inline-block;font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:.16em;color:var(--brass);
+    border:1px solid rgba(74,94,58,.38);padding:3px 8px;border-radius:2px;margin:11px 0 0;text-transform:uppercase}
+  .dm.confirmed{background:rgba(74,94,58,.08)}
+  .tags{display:flex;flex-wrap:wrap;align-items:center;gap:5px 13px;margin:12px 0 0}
+  .tag{font-family:var(--mono);font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--mut);position:relative;font-weight:400}
+  .tag:not(:first-child):not(.lock):not(.day)::before{content:"";position:absolute;left:-7px;top:50%;width:2px;height:2px;border-radius:50%;background:var(--mut);transform:translateY(-50%)}
+  .tag.vibe{color:var(--brass)}
+  .tag.lock{font-size:11px;letter-spacing:.05em;color:#5c3a1e;background:rgba(122,74,58,.1);border:1px solid rgba(122,74,58,.38);padding:3px 8px;border-radius:2px;text-transform:uppercase}
+  .tag.day{font-size:10px;letter-spacing:.1em;color:var(--brass);background:rgba(74,94,58,.08);border:1px solid rgba(74,94,58,.32);padding:3px 8px;border-radius:2px}
+  .tag.booked-tag{font-size:10px;letter-spacing:.1em;color:#3a5a2e;background:rgba(74,94,58,.12);border:1px solid rgba(74,94,58,.5);padding:3px 8px;border-radius:2px}
+  .card p{margin:12px 0 13px;font-size:15.5px;line-height:1.65;color:var(--soft)}
+  .links{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .btn{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:7px 12px;border-radius:2px;border:1px solid var(--line);color:var(--mut);background:transparent;font-weight:400}
+  .btn.book{border-color:var(--brass);color:var(--brass)}
+  .add{margin-left:auto;width:34px;height:34px;border-radius:50%;font-size:18px;line-height:1;font-weight:300;
+    border:1px solid rgba(74,94,58,.5);color:var(--brass);background:transparent;font-family:var(--read);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;padding:0;flex:0 0 auto}
+  .add.on{background:var(--brass);color:var(--bg)}
+  .sharebtn{margin-left:auto;background:transparent;border:1px solid rgba(74,94,58,.5);color:var(--brass);
+    font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:8px 16px;border-radius:2px;cursor:pointer;align-self:center;font-weight:500}
+  .show-all{display:block;width:100%;margin:4px 0 12px;background:transparent;border:1px solid rgba(74,94,58,.3);
+    color:var(--brass);font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;padding:12px;border-radius:2px;cursor:pointer;font-weight:500}
+  body.filtering .show-all{display:none}
+
+  .empty{color:var(--mut);font-size:14px;background:var(--card);border:1px dashed var(--line);border-radius:2px;padding:22px;text-align:center}
+  .empty b{color:var(--soft)}
+  .pentry{display:flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--line);border-radius:2px;padding:12px 13px;margin:0 0 8px}
+  .pe-name{font-family:var(--serif);font-weight:600;font-size:17px}
+  .ig{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--brass);white-space:nowrap;font-weight:500}
+  .pe-rm{margin-left:auto;background:transparent;border:1px solid var(--line);color:var(--mut);border-radius:2px;padding:6px 12px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;flex:0 0 auto;font-weight:400}
+
+  .flight-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:14px 0 0}
+  @media(max-width:500px){.flight-grid{grid-template-columns:1fr}}
+  .fcard{background:var(--card);border:1px solid var(--line);border-radius:2px;padding:16px}
+  .fcard .fname{font-family:var(--serif);font-size:18px;font-weight:600;margin:0 0 10px}
+  .fcard .fleg{margin:0 0 10px;padding:0 0 10px;border-bottom:1px solid var(--line2)}
+  .fcard .fleg:last-child{border-bottom:0;margin:0;padding:0}
+  .fcard .fdir{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--brass);font-weight:500;margin:0 0 4px}
+  .fcard .fdetail{font-family:var(--mono);font-size:11px;color:var(--soft);line-height:1.7;font-weight:400}
+  .fcard .fconf{font-family:var(--mono);font-size:10px;color:var(--mut);letter-spacing:.06em;margin-top:5px}
+
+  .plansmart{border:1px solid rgba(74,94,58,.28);border-radius:2px;margin:18px 0 6px;overflow:hidden}
+  .plansmart>summary{list-style:none;cursor:pointer;padding:15px 18px;font-family:var(--serif);font-size:19px;font-weight:600;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;background:var(--card)}
+  .plansmart>summary::-webkit-details-marker{display:none}
+  .plansmart>summary::after{content:"+";margin-left:auto;color:var(--brass);font-family:var(--mono);font-size:16px;transition:.2s}
+  .plansmart[open]>summary::after{content:"\2013"}
+  .plansmart .ps-body{padding:0 18px 18px;background:var(--card)}
+  .plansmart .ps-intro{font-size:13px;color:var(--mut);margin:0 0 12px;font-family:var(--mono);font-weight:400;letter-spacing:.01em}
+  .plansmart ul{list-style:none;margin:0;padding:0}
+  .plansmart li{position:relative;padding:6px 0 6px 16px;font-size:14.5px;color:var(--soft);line-height:1.6}
+  .plansmart li:before{content:"";position:absolute;left:1px;top:15px;width:3px;height:3px;border-radius:50%;background:var(--brassdim)}
+  .plansmart li b{color:var(--txt);font-weight:500}
+
+  footer{border-top:1px solid var(--line);padding:24px 18px 64px;color:var(--mut);font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;max-width:680px;margin:0 auto;font-weight:400}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kicker">Girls Trip &middot; Montage Deer Valley &middot; Jul 2&ndash;5</div>
+  <h1>Three Days.<br>Park City.</h1>
+  <p class="orient">8,200 ft above sea level. Montage is base. Tap <b>+</b> to save any spot, open <b>Plan</b> and hit <b>Share</b> to copy your shortlist.</p>
+</header>
+
+<div class="bars">
+  <div class="bars-row">
+    <nav>
+      <button class="plan" data-sec="plan">Plan<span id="plancount"></span></button>
+      <button data-sec="eat">Eat</button>
+      <button data-sec="do">Do</button>
+      <button data-sec="stay">Stay</button>
+      <button data-sec="flights">Flights</button>
+      <button data-sec="tips">Tips</button>
+    </nav>
+    <a href="plan.html" class="planner-link">Planner &#8594;</a>
+  </div>
+  <div class="dayfilter">
+    <span class="dl">By day</span>
+    <button data-day="all" class="active">All</button>
+    <button data-day="thu">Thu</button>
+    <button data-day="fri">Fri</button>
+    <button data-day="sat">Sat</button>
+    <button data-day="sun">Sun</button>
+  </div>
+</div>
+
+<main>
+
+<details class="plansmart" style="margin:14px 0 4px">
+  <summary style="font-size:15px;letter-spacing:.01em">The shape of the trip</summary>
+  <div class="ps-body" style="padding-top:14px">
+    <p class="ps-intro">Three nights at Montage Deer Valley. Check-in Thursday, checkout Sunday morning. The big day is Saturday&mdash;everything else is building toward it.</p>
+    <div class="plansmart ph" style="font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--brass);margin:12px 0 8px;font-weight:500;border-top:1px solid var(--line2);padding-top:14px">Already confirmed</div>
+    <ul>
+      <li><b>Riverhorse on Main</b> &mdash; Fri Jul 3 at 7:30pm &middot; 3 guests &middot; Dining Room</li>
+      <li><b>Spa at Montage</b> &mdash; Fri Jul 3 at 11:30am &middot; 3 guests &middot; 120 min each</li>
+      <li><b>Veuve Clicquot champagne experience</b> &mdash; timing TBD</li>
+      <li><b>Montage Deer Valley</b> &mdash; Peak View room &middot; Jul 2&ndash;5</li>
+    </ul>
+  </div>
+</details>
+
+<!-- PLAN -->
+<section id="plan">
+  <div class="sec-head"><span class="n">00</span><h2>The Plan</h2><button id="shareBtn" class="sharebtn">Share</button></div>
+  <div id="planlist"></div>
+</section>
+
+<!-- EAT -->
+<section id="eat" data-sec="eat">
+  <div class="sec-head"><span class="n">01</span><h2>Eat</h2></div>
+  <p class="sec-sub">One confirmed booking on Friday night. Everything else is opportunistic or on-property.</p>
+  <div class="filter-note"></div>
+
+  <div class="card star booked" data-id="riverhorse" data-name="Riverhorse on Main" data-day="fri" data-daytag="Fri">
+    <div class="card-head">
+      <h3>Riverhorse on Main</h3>
+      <span class="price">$$$</span>
+    </div>
+    <span class="dm confirmed">Confirmed &mdash; Fri 7:30pm</span>
+    <div class="tags">
+      <span class="tag booked-tag">Booked via Resy</span>
+      <span class="tag day">Fri</span>
+      <span class="tag vibe">Hardest table in Park City</span>
+    </div>
+    <p>The anchor of the trip. Riverhorse has been Park City&rsquo;s top table for decades&mdash;Rocky Mountain game, dry-aged beef, wood-fire finishes in a 19th-century building on Main Street. Reservation is the whole Friday night engine: spa in the afternoon, walk to dinner, cocktails after.</p>
+    <div class="links">
+      <a class="btn book" href="https://resy.com" target="_blank">Manage on Resy</a>
+      <button class="add" aria-label="Add to plan">+</button>
+    </div>
+  </div>
+
+  <div class="card star" data-id="handle" data-name="Handle" data-day="sat" data-daytag="Sat">
+    <div class="card-head">
+      <h3>Handle</h3>
+      <span class="price">$$$</span>
+    </div>
+    <span class="dm">Reserve</span>
+    <div class="tags">
+      <span class="tag day">Sat</span>
+      <span class="tag vibe">Farm-to-table &middot; Park City favorite</span>
+      <span class="tag">Main Street</span>
+    </div>
+    <p>The closest Park City gets to a Blackberry Farm dinner in town. Local sourcing, thoughtful menu, beautiful room. Works as the Saturday night option if you want to stay in town rather than eating at Montage. Book in advance&mdash;July 4th weekend fills early.</p>
+    <div class="links">
+      <a class="btn book" href="https://resy.com" target="_blank">Resy</a>
+      <button class="add" aria-label="Add to plan">+</button>
+    </div>
+  </div>
+
+  <div class="card star" data-id="highwest" data-name="High West Saloon" data-day="fri,sat" data-daytag="Fri or Sat">
+    <div class="card-head">
+      <h3>High West Saloon</h3>
+      <span class="price">$$</span>
+    </div>
+    <span class="dm">Walk-in</span>
+    <div class="tags">
+      <span class="tag day">Fri or Sat</span>
+      <span class="tag vibe">Best whiskey bar in Utah</span>
+      <span class="tag">Main Street</span>
+    </div>
+    <p>Utah&rsquo;s first craft distillery since Prohibition, in a 100-year-old livery stable on Main Street. The cocktails are the point&mdash;whiskey flights, High West American Prairie, seasonal sours. Good for after Riverhorse or as a Sat night anchor. Walk-in but it gets crowded; go before 7pm or after 9.</p>
+    <div class="links">
+      <button class="add" aria-label="Add to plan">+</button>
+    </div>
+  </div>
+
+  <div class="card" data-id="harvest" data-name="Harvest at Montage" data-day="thu,sun" data-daytag="Thu or Sun">
+    <div class="card-head">
+      <h3>Harvest at Montage</h3>
+      <span class="price">$$$</span>
+    </div>
+    <span class="dm">On-property</span>
+    <div class="tags">
+      <span class="tag day">Thu or Sun</span>
+      <span class="tag">No travel needed</span>
+    </div>
+    <p>The Montage&rsquo;s main dining room. Exactly as good as you&rsquo;d expect: local product, attentive service, the kind of room you linger in. Best for Thursday arrival dinner (Anya doesn&rsquo;t arrive until 8pm so a late reservation works) and Sunday morning before flights.</p>
+    <div class="links">
+      <button class="add" aria-label="Add to plan">+</button>
+    </div>
+  </div>
+
+  <button class="show-all" data-label="Show more restaurants">Show more restaurants</button>
+
+  <div class="card more" data-id="vessel" data-name="Vessel Kitchen" data-day="sat" data-daytag="Sat lunch">
+    <div class="card-head">
+      <h3>Vessel Kitchen</h3>
+      <span class="price">$</span>
+    </div>
+    <div class="tags">
+      <span class="tag day">Sat lunch</span>
+      <span class="tag">Healthy / casual</span>
+    </div>
+    <p>The lunch spot if you want something light before the July 4th festivities. Clean bowls, fresh salads, good coffee. Easy in-and-out on a busy holiday weekend.</p>
+    <div class="links">
+      <button class="add" aria-label="Add to plan">+</button>
+    </div>
+  </div>
+
+  <div class="card more" data-id="zoom" data-name="Zoom" data-day="sat" data-daytag="Sat">
+    <div class="card-head">
+      <h3>Zoom</h3>
+      <span class="price">$$$</span>
+    </div>
+    <span class="dm">Reserve</span>
+    <div class="tags">
+      <span class="tag day">Sat</span>
+      <span class="tag">Robert Redford&rsquo;s spot</span>
+    </div>
+    <p>Robert Redford&rsquo;s restaurant in the historic Prospector train depot. American classics in a beautiful space with a serious bar program. Solid backup if Handle doesn&rsquo;t come through.</p>
+    <div class="links">
+      <button class="add" aria-label="Add to plan">+</button>
+    </div>
+  </div>
+
+</section>
+
+<!-- DO -->
+<section id="do" data-sec="do">
+  <div class="sec-head"><span class="n">02</span><h2>Do</h2></div>
+  <p class="sec-sub">Two confirmed: spa Friday, champagne experience TBD. The rest is what the mountain offers.</p>
+  <div class="filter-note"></div>
+
+  <div class="card star booked" data-id="spa" data-name="Spa at Montage" data-day="fri" data-daytag="Fri">
+    <div class="card-head">
+      <h3>Spa at Montage Deer Valley</h3>
+    </div>
+    <span class="dm confirmed">Confirmed &mdash; Fri 11:30am</span>
+    <div class="tags">
+      <span class="tag booked-tag">Booked with Allie</span>
+      <span class="tag day">Fri</span>
+      <span class="tag">3 guests &middot; 120 min each</span>
+      <span class="tag">Female therapists</span>
+    </div>
+    <p>120 minutes each, all on Rafah&rsquo;s card (property credits). Female therapists confirmed. The thermal circuit&mdash;salt grotto, steam, cold plunge&mdash;is available pre- and post-treatment. Build in extra time. Robes stay on until Riverhorse.</p>
+    <div class="links">
+      <button class="add" aria-label="Add to plan">+</button>
+    </div>
+  </div>
+
+  <div class="card star booked" data-id="veuve" data-name="Veuve Clicquot Champagne Experience" data-day="sat" data-daytag="Sat">
+    <div class="card-head">
+      <h3>Veuve Clicquot Experience</h3>
+    </div>
+    <span class="dm confirmed">Confirmed</span>
+    <div class="tags">
+      <span class="tag booked-tag">Booked</span>
+      <span class="tag day">Sat</span>
+      <span class="tag vibe">The wow moment</span>
+    </div>
+    <p>The champagne sabrage experience with Veuve Clicquot Yellow Label. A sommelier walks you through the bottle and the saber before opening it poolside or on the terrace. The kind of thing that ends up in photos for years. Time to be added once confirmed.</p>
+    <div class="links">
+      <button class="add" aria-label="Add to plan">+</button>
+    </div>
+  </div>
+
+  <div class="card star" data-id="fireworks" data-name="July 4 Fireworks" data-day="sat" data-daytag="Sat">
+    <div class="card-head">
+      <h3>July 4th Fireworks</h3>
+    </div>
+    <div class="tags">
+      <span class="tag day">Sat</span>
+      <span class="tag vibe">Park City Mountain Resort</span>
+      <span class="tag">After dark</span>
+    </div>
+    <p>Park City Mountain Resort runs the main fireworks show at 10pm on July 4th. Visible from the slopes and from much of town. The Montage terrace has a strong sightline. Go early if you want a Main Street position&mdash;it gets dense by 9pm. Walking back uphill after is steep; consider the shuttle.</p>
+    <div class="links">
+      <button class="add" aria-label="Add to plan">+</button>
+    </div>
+  </div>
+
+  <div class="card" data-id="pool" data-name="Montage Pool" data-day="sat" data-daytag="Sat">
+    <div class="card-head">
+      <h3>Montage Pool Day</h3>
+    </div>
+    <div class="tags">
+      <span class="tag day">Sat</span>
+      <span class="tag">No plans needed</span>
+    </div>
+    <p>The outdoor heated pool with mountain views is the natural Saturday morning. Order off the pool menu, get chairs early (they go fast on July 4th weekend). This is the Blackberry Farm part of the trip&mdash;nowhere to be, drinks arriving on their own.</p>
+    <div class="links">
+      <button class="add" aria-label="Add to plan">+</button>
+    </div>
+  </div>
+
+  <button class="show-all" data-label="Show more activities">Show more activities</button>
+
+  <div class="card more" data-id="horseback" data-name="Horseback Ride" data-day="sat" data-daytag="Sat morning">
+    <div class="card-head">
+      <h3>Horseback Ride Through Deer Valley</h3>
+    </div>
+    <span class="dm">Book via Montage concierge</span>
+    <div class="tags">
+      <span class="tag day">Sat morning</span>
+      <span class="tag">~2 hrs</span>
+    </div>
+    <p>Guided trail ride through Deer Valley wildflowers at ~8,200 ft. Best in July when the alpine meadows are blooming. Book through the Montage concierge&mdash;limited spots. Goes early (7:30 or 9am), which works as the Saturday morning before the pool afternoon.</p>
+    <div class="links">
+      <button class="add" aria-label="Add to plan">+</button>
+    </div>
+  </div>
+
+  <div class="card more" data-id="hike" data-name="Morning Hike" data-day="fri,sat" data-daytag="Fri or Sat morning">
+    <div class="card-head">
+      <h3>Morning Hike from Montage</h3>
+    </div>
+    <div class="tags">
+      <span class="tag day">Fri or Sat morning</span>
+      <span class="tag">~1.5 hrs</span>
+    </div>
+    <p>The Montage has direct trailhead access. The Jordanelle Overlook trail is 3 miles with views of the reservoir and the Uintas. Go before 9am before it gets warm. Altitude hits&mdash;go slower than you think you need to and drink water before you leave.</p>
+    <div class="links">
+      <button class="add" aria-label="Add to plan">+</button>
+    </div>
+  </div>
+
+  <div class="card more" data-id="aerial" data-name="Deer Valley Scenic Tram" data-day="fri,sat" data-daytag="Fri or Sat">
+    <div class="card-head">
+      <h3>Deer Valley Gondola</h3>
+    </div>
+    <div class="tags">
+      <span class="tag day">Fri or Sat</span>
+      <span class="tag">Mountain views</span>
+    </div>
+    <p>Deer Valley runs the gondola in summer for sightseeing and mountain biking. The top at ~9,400 ft has a panoramic view over Park City and the Wasatch range. 20 minutes from Montage, quick turnaround.</p>
+    <div class="links">
+      <button class="add" aria-label="Add to plan">+</button>
+    </div>
+  </div>
+
+</section>
+
+<!-- STAY -->
+<section id="stay" data-sec="stay">
+  <div class="sec-head"><span class="n">03</span><h2>Stay</h2></div>
+  <p class="sec-sub">Montage Deer Valley is the property. Three nights, Peak View room, booked.</p>
+  <div class="filter-note"></div>
+
+  <div class="card star booked" data-id="montage" data-name="Montage Deer Valley" data-day="thu,fri,sat" data-daytag="Thu&ndash;Sat">
+    <div class="card-head">
+      <h3>Montage Deer Valley</h3>
+      <span class="price">Peak View</span>
+    </div>
+    <span class="dm confirmed">Jul 2&ndash;5 &middot; Check-in Thu &middot; Checkout Sun</span>
+    <div class="tags">
+      <span class="tag booked-tag">Booked</span>
+      <span class="tag">8,200 ft</span>
+      <span class="tag">Ski-in ski-out in winter</span>
+    </div>
+    <p>The resort sits on the back side of Deer Valley at elevation. Peak View rooms face the mountain. The property is walkable internally&mdash;spa, pools, Harvest restaurant, fire pits, the Grand Lawn&mdash;and Main Street is a 10-minute drive or free shuttle. Valet parking on arrival. Leave the car; everything you need is on property or one shuttle away.</p>
+    <div class="links">
+      <a class="btn book" href="https://www.montagehotels.com/deervalley/" target="_blank">montagehotels.com</a>
+      <button class="add" aria-label="Add to plan">+</button>
+    </div>
+  </div>
+
+  <div class="card" data-id="montage-tips" data-name="Property Tips" data-day="thu" data-daytag="Thu">
+    <div class="card-head">
+      <h3>Montage Insider Notes</h3>
+    </div>
+    <div class="tags">
+      <span class="tag day">All days</span>
+    </div>
+    <p><b>Arrival:</b> valet greets you at the motor court. Tip $5&ndash;10 on the way out.<br>
+    <b>Pool chairs:</b> claimed by 9am on July 4th weekend. Send one person early.<br>
+    <b>Room service:</b> legitimately good. The breakfast in room before spa on Friday beats the restaurant rush.<br>
+    <b>Property credits:</b> applied at checkout against spa and food charges.<br>
+    <b>Shuttle to Main Street:</b> runs every 30 minutes. Easier than parking on Main.</p>
+    <div class="links">
+      <button class="add" aria-label="Add to plan">+</button>
+    </div>
+  </div>
+
+</section>
+
+<!-- FLIGHTS -->
+<section id="flights" data-sec="flights">
+  <div class="sec-head"><span class="n">04</span><h2>Flights</h2></div>
+  <p class="sec-sub">All three into SLC. Rafah lands first Thursday morning; Anya and Mallika arrive from SF Thursday evening. Sunday departures are staggered&mdash;Mallika very early.</p>
+  <div class="filter-note"></div>
+
+  <div class="flight-grid">
+
+    <div class="fcard">
+      <div class="fname">Rafah</div>
+      <div class="fleg">
+        <div class="fdir">Thu Jul 2 &rarr; SLC</div>
+        <div class="fdetail">
+          DL 1009 &middot; Seat 20C<br>
+          EWR 7:15am &rarr; SLC 10:13am<br>
+          Delta Comfort+
+        </div>
+        <div class="fconf">Conf: HMHOJ7</div>
+      </div>
+      <div class="fleg">
+        <div class="fdir">Sun Jul 5 &rarr; EWR</div>
+        <div class="fdetail">
+          DL 2033 &middot; Seat 17C<br>
+          SLC 10:25am &rarr; EWR 4:49pm
+        </div>
+        <div class="fconf">Conf: HMH2QE</div>
+      </div>
+    </div>
+
+    <div class="fcard">
+      <div class="fname">Anya</div>
+      <div class="fleg">
+        <div class="fdir">Thu Jul 2 &rarr; SLC</div>
+        <div class="fdetail">
+          UA 543 &middot; Seat 15A<br>
+          SFO 4:11pm &rarr; SLC 7:11pm<br>
+          Operated by United
+        </div>
+      </div>
+      <div class="fleg">
+        <div class="fdir">Sun Jul 5 &rarr; EWR</div>
+        <div class="fdetail">
+          UA 1845 &middot; Seat 20F<br>
+          SLC 11:13am &rarr; EWR 5:45pm<br>
+          Operated by United
+        </div>
+      </div>
+    </div>
+
+    <div class="fcard">
+      <div class="fname">Mallika</div>
+      <div class="fleg">
+        <div class="fdir">Thu Jul 2 &rarr; SLC</div>
+        <div class="fdetail">
+          Arrival TBD
+        </div>
+      </div>
+      <div class="fleg">
+        <div class="fdir">Sun Jul 5 &rarr; SFO</div>
+        <div class="fdetail">
+          DL 920 &middot; Nonstop<br>
+          SLC 7:50am &rarr; SFO 8:56am
+        </div>
+        <div class="fconf">Conf: HUUKSA</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="card" style="margin-top:14px" data-id="logistics" data-name="Arrival Logistics">
+    <div class="card-head"><h3>SLC &rarr; Montage</h3></div>
+    <p><b>Drive:</b> 45 minutes on I-80 E then SR-224 N into Deer Valley. No toll. Park in the Montage motor court&mdash;valet takes over from there.<br>
+    <b>Rafah arrives 10:13am:</b> room likely not ready until 4pm. Drop bags with bell staff, explore the property, get lunch at Harvest.<br>
+    <b>Anya arrives 7:11pm:</b> room is ready. Direct to Montage. Rafah can share the Lyft if she hasn&rsquo;t already rented a car.<br>
+    <b>Rideshare:</b> Lyft/Uber reliable from SLC airport. ~$55&ndash;75 each way.</p>
+  </div>
+
+</section>
+
+<!-- TIPS -->
+<section id="tips" data-sec="tips">
+  <div class="sec-head"><span class="n">05</span><h2>Tips</h2></div>
+  <div class="filter-note"></div>
+
+  <div class="card"><p style="margin:0"><b>Altitude:</b> Park City sits at 7,000&ndash;8,200 ft. First day effects are real even if you&rsquo;re fit&mdash;headache, fatigue, shortness of breath on stairs. Drink twice the water you think you need. Avoid heavy drinking the first evening. By Saturday you&rsquo;re acclimated.</p></div>
+  <div class="card"><p style="margin:0"><b>July 4th weekend crowds:</b> Park City&rsquo;s busiest weekend of the year. Main Street fills by 7pm on Saturday. If you&rsquo;re going to the fireworks, take the Montage shuttle and arrive by 9pm for a good position. Don&rsquo;t plan to drive on Main Street after 8pm.</p></div>
+  <div class="card"><p style="margin:0"><b>Weather:</b> July days are warm (75&ndash;85&deg;F), evenings cool quickly to 50s at elevation. Bring a light jacket for any outdoor dinner or the fireworks. Afternoon thunderstorms are common&mdash;anything outdoor in the afternoon has a 30&ndash;40% chance of a brief storm. They pass fast.</p></div>
+  <div class="card"><p style="margin:0"><b>Sunday departures:</b> Mallika leaves SLC at 7:50am&mdash;she needs to be in the car by 6:15am at the latest. Rafah (10:25am) and Anya (11:13am) can share a late-morning Lyft. Checkout is 11am; ask the Montage for a late checkout or leave bags with bell staff and use the lobby until your Lyft arrives.</p></div>
+  <div class="card"><p style="margin:0"><b>Main Street parking:</b> impossible July 4th weekend. Never drive to Main Street&mdash;always take the Montage shuttle or a Lyft. The shuttle returns last pickup around midnight; confirm timing with the concierge on arrival.</p></div>
+  <div class="card"><p style="margin:0"><b>Spa gratuity:</b> 18&ndash;20% is standard on the service total, added to the room bill. Cash tip directly to your therapist is appreciated on top if the session was exceptional.</p></div>
+  <div class="card"><p style="margin:0"><b>No alcohol at grocery stores in Utah:</b> wine and spirits only at state liquor stores (DABC). The nearest is in Kimball Junction (~10 min). Hours are 11am&ndash;10pm Mon&ndash;Sat, closed Sunday. Stock up Thursday if you want anything for the room. The Montage bar is fully stocked but expensive.</p></div>
+
+</section>
+
+</main>
+
+<footer>
+  Park City &middot; Jul 2&ndash;5 &middot; Plan saves to this device only
+</footer>
+
+<script>
+const KEY='tripParkCity_v1';
+const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function loadLS(){try{return JSON.parse(localStorage.getItem(KEY))||{items:{}}}catch(e){return{items:{}}}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+let state=loadLS();
+
+const navBtns=document.querySelectorAll('nav button');
+function setNav(sec){navBtns.forEach(x=>x.classList.toggle('on',x.dataset.sec===sec));}
+navBtns.forEach(b=>{
+  b.addEventListener('click',()=>{
+    const sec=b.dataset.sec;
+    setNav(sec);
+    let el=sec==='plan'?document.getElementById('plan'):document.querySelector('[data-sec="'+sec+'"]');
+    if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+try{
+  const spy=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const s=e.target.id==='plan'?'plan':e.target.dataset.sec;if(s)setNav(s);}});},{rootMargin:'-112px 0px -72% 0px'});
+  document.querySelectorAll('#plan,section[data-sec]').forEach(s=>spy.observe(s));
+}catch(e){}
+
+function mark(btn,on){btn.classList.toggle('on',on);btn.textContent=on?'✓':'+';btn.setAttribute('aria-label',on?'Added':'Add to plan');}
+document.querySelectorAll('.card').forEach(card=>{
+  const id=card.dataset.id;if(!id)return;
+  const btn=card.querySelector('.add');if(!btn)return;
+  mark(btn,!!state.items[id]);
+  btn.addEventListener('click',()=>{
+    if(state.items[id]){delete state.items[id];mark(btn,false);}
+    else{state.items[id]={name:card.dataset.name||id,daytag:card.dataset.daytag||''};mark(btn,true);}
+    save();renderPlan();count();
+  });
+});
+
+document.querySelectorAll('.show-all').forEach(b=>{b.addEventListener('click',()=>{const open=b.closest('section').classList.toggle('open');b.textContent=open?'Show less':b.dataset.label;});});
+
+let filter='all';
+document.querySelectorAll('.dayfilter button').forEach(b=>{b.addEventListener('click',()=>{filter=b.dataset.day;document.querySelectorAll('.dayfilter button').forEach(x=>x.classList.toggle('active',x===b));applyFilter();});});
+function applyFilter(){
+  document.body.classList.toggle('filtering',filter!=='all');
+  document.querySelectorAll('.card[data-day]').forEach(card=>{card.classList.toggle('hide',!(filter==='all'||card.dataset.day.split(',').includes(filter)));});
+  const labels={thu:'Thursday',fri:'Friday',sat:'Saturday',sun:'Sunday'};
+  document.querySelectorAll('.filter-note').forEach(n=>{n.textContent=filter==='all'?'':(labels[filter]||filter)+' only.';});
+}
+
+document.getElementById('shareBtn').addEventListener('click',()=>{
+  if(!Object.keys(state.items).length){alert('Tap + on a few spots first, then Share.');return;}
+  const text=planText();
+  if(navigator.share){navigator.share({title:'Park City',text:text}).catch(()=>{});}
+  else{copy(text);}
+});
+function copy(t){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(()=>alert('Copied. Paste it wherever.'),()=>prompt('Copy:',t));}else{prompt('Copy:',t);}}
+function planText(){
+  const out=['PARK CITY &middot; JUL 2&ndash;5'];
+  Object.values(state.items).forEach(e=>out.push('- '+e.name+(e.daytag?' ('+e.daytag+')':'')));
+  return out.join('\n');
+}
+
+function renderPlan(){
+  const wrap=document.getElementById('planlist');
+  const all=Object.entries(state.items).map(([id,it])=>({id,...it}));
+  if(!all.length){wrap.innerHTML='<div class="empty">Tap <b>+</b> on spots to build a shortlist, then Share it. <span style="opacity:.65">Saved on this device only.</span></div>';return;}
+  let html='';
+  all.forEach(e=>{
+    const tag=e.daytag?'<span class="ig">'+esc(e.daytag)+'</span>':'';
+    html+='<div class="pentry"><span class="pe-name">'+esc(e.name)+'</span>'+tag+'<button class="pe-rm" data-id="'+e.id+'">Remove</button></div>';
+  });
+  wrap.innerHTML=html;
+  wrap.querySelectorAll('.pe-rm').forEach(el=>el.addEventListener('click',()=>{const id=el.dataset.id;delete state.items[id];save();renderPlan();count();sync();}));
+}
+function sync(){document.querySelectorAll('.card').forEach(card=>{const id=card.dataset.id;const b=card.querySelector('.add');if(id&&b)mark(b,!!state.items[id]);});}
+function count(){const n=Object.keys(state.items).length;document.getElementById('plancount').textContent=n?' ('+n+')':'';}
+
+renderPlan();count();
+</script>
+</body>
+</html>
